@@ -2,17 +2,41 @@
 import {ref} from "vue";
 
 const showModal = ref(false);
-const newNote = ref("hiiiiiii");
+const newNote = ref("");
+const errorMessage= ref("");
+const notes = ref([]);
+
+function getRandomColor () {
+ return  "hsl(" + Math .random () * 360 + ", 100% ,75%)";
+
+}
+
+const addNote = () => {
+  if(newNote.value.length < 10 ) {
+    return errorMessage.value = "Note needs 10 caracters or more "
+  }
+  notes.value.push({
+    id: Math.floor(Math.random() * 1000000 ),
+    text: newNote.value,
+    date: new Date(),
+    backgroundColor: getRandomColor(),
+  }),
+  showModal.value=false;
+  newNote.value= ""
+
+}
+
 
 </script>
 
 
 <template>
   <main>
-    <div v-if="showModal" @click="showModal" class="overlay">
+    <div v-if="showModal" class="overlay">
       <div  class="modal">
-        <textarea v-model="newNote" name="note" id="note" cols="30" rows="10"></textarea>
-        <button>Add Note</button>
+        <textarea v-model.trim="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <button @click="addNote">Add Note</button>
         <button @click="showModal = false" class="close">Close</button>
       </div>
     </div>
@@ -22,25 +46,16 @@ const newNote = ref("hiiiiiii");
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div class="card">
+        <div 
+        v-for="note in notes"
+        :key="note.id"
+        class="card" :style="{ backgroundColor: note.backgroundColor }">
           <p class="main-text">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure, at nisi. Sed natus tenetur ut.
-
+            {{ note.text }}
           </p>
-          <p class="date">04/02/6354</p>
-
+          <p class="date"> {{ note.date }} </p>
         </div>
-        <div class="card">
-          <p class="main-text">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iure, at nisi. Sed natus tenetur ut.
-
-          </p>
-          <p class="date">04/02/6354</p>
-
-        </div>
-
       </div>
-
     </div>
   </main>
 </template>
@@ -49,6 +64,7 @@ const newNote = ref("hiiiiiii");
 main {
   height: 100vh;
   width: 100vw ;
+  background-color: aliceblue;
 }
 .container {
   max-width: 1000px;
@@ -66,6 +82,7 @@ h1 {
   font-weight: bold;
   margin-bottom: 25px ;
   font-size: 75px;
+  color: black;
 }
 header button {
   border: none;
@@ -114,7 +131,7 @@ header button {
 }
 .modal{
   width: 750px;
-  background-color: rgb(244, 75, 241);
+  background-color: white;
   border-radius: 10px;
   padding: 30px;
   position: relative;
@@ -138,5 +155,10 @@ header button {
 
 }
 
-
+.main-text {
+  color: black;
+}
+.modal p {
+  color: red;
+}
 </style>
